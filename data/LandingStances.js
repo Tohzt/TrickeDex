@@ -1,7 +1,7 @@
 /* Trick Data */
 
 
-export default class Trick {
+export default class LandingStances {
 	constructor(){
 	}
 }
