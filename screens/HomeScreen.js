@@ -15,13 +15,21 @@ export default class Home extends React.Component {
 			<View style={styles.container}>
 				<TouchableOpacity
 					style={styles.buttonContainer}
-					onPress={() => navigate('ComboGen')}>
+					onPress={() => navigate('ComboGen')}
+				>
 					<Text style={styles.btnText}>To Combo Gen</Text>
 				</TouchableOpacity>
 				<TouchableOpacity
 					style={styles.buttonContainer}
-					onPress={() => navigate('ComboList')}>
+					onPress={() => navigate('ComboList')}
+				>
 					<Text style={styles.btnText}>To Combo List</Text>
+				</TouchableOpacity>
+				<TouchableOpacity
+					style={styles.buttonContainer}
+					onPress={() => navigate('TrickList')}
+				>
+					<Text style={styles.btnText}>To Tricktionary</Text>
 				</TouchableOpacity>
 			</View>
 		)

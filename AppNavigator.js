@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import HomeScreen from './screens/HomeScreen';
 import ComboListScreen from './screens/ComboListScreen';
 import ComboGenScreen from './screens/ComboGenScreen';
+import TrickListScreen from './screens/TricktionaryScreen';
 
 const Stack = createStackNavigator()
 
@@ -25,6 +26,11 @@ function AppNavigator() {
 						name='ComboGen'
 						component={ComboGenScreen}
 						options={{ title: 'Combo Generator' }}
+					/>
+					<Stack.Screen
+						name='TrickList'
+						component={TrickListScreen}
+						options={{ title: 'Trick List' }}
 					/>
 					<Stack.Screen
 						name='ComboList'

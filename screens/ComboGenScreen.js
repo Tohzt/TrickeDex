@@ -4,23 +4,27 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 // Import Custom Components
 import { TRICK_LIST } from '../data/data';
 
-const TricksArr = [
-	"Cork > ",
-	"Aerial > ",
-	"B-Twist > ",
-	"540 > ",
-	"Tornada > "
-];
-
 export default class ComboGenScreen extends React.Component {
 	constructor(props){
 		super(props);
-		this.state = { combo: [] };
+		this.state = { 
+			combo: [], 
+			comboString: []
+		};
 	}
 
 	// Generate "random" Combo
 	_genCombo_Handler() {
-		this.setState(prevState => ({ combo: TricksArr }));
+		var _arr = [];
+		var _arrStr = [];
+
+		for (var trick in TRICK_LIST) {
+			_arr.push(TRICK_LIST[trick]);
+			_arrStr.push(TRICK_LIST[trick].name);
+		}
+
+		this.setState(() => ({ combo: _arr }));
+		this.setState(() => ({ comboString: _arrStr }));
 	}
 
 	// Add element to end of Combo
@@ -29,31 +33,20 @@ export default class ComboGenScreen extends React.Component {
 		var max = TRICK_LIST.length;
 		let _rnd = Math.floor(Math.random() * (max - min) + min);
 
-		this.setState(prevState => {
-			const combo = [...this.state.combo, TRICK_LIST[_rnd].title];
-
-			return { combo };
-		});
+		this.setState(() => ({ combo: [...this.state.combo, TRICK_LIST[_rnd]] }) );
+		this.setState(() => ({ comboString: [...this.state.comboString, TRICK_LIST[_rnd].name] }) );
 	}
 
 	// Remove last element from Combo
 	_remFromCombo_Handler() {
-		this.setState(prevState => {
-			if (this.state.combo.length > 0) {
-				const combo = [...this.state.combo.slice(0,this.state.combo.length-1)];
-
-				return { combo };
-			}
-		});
+		this.setState(() => ({ combo: [...this.state.combo.slice(0,this.state.combo.length-1)] }) );
+		this.setState(() => ({ comboString: [...this.state.comboString.slice(0,this.state.comboString.length-1)] }) );
 	}
 
 	// Clear Combo
 	_delCombo_Handler() {
-		this.setState(prevState => {
-			const combo = [];
-
-			return { combo };
-		});
+		this.setState(() => ({ combo: [] }) );
+		this.setState(() => ({ comboString: [] }) );
 	}
 	
 	render () {
@@ -61,7 +54,7 @@ export default class ComboGenScreen extends React.Component {
 			<View style={styles.container}>
 				<Text style={styles.text}>Do This Combo</Text>
 				<View style={styles.comboContainer}>
-					<Text>{this.state.combo.join(" > ")}</Text>
+					<Text>{this.state.comboString.join(" > ")}</Text>
 				</View>
 
 				<View style={{

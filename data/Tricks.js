@@ -5,10 +5,14 @@ export default class Trick {
 	constructor(
 		id, 
 		title, 
-		subTitle,
+		name,
+		takeoff,
+		landingStance,
 	){
 		this.id = id;
 		this.title = title;
-		this.subTitle = subTitle;
+		this.name = name;
+		this.takeoff = takeoff;
+		this.landingStance = landingStance
 	}
 }
