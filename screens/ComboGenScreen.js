@@ -1,8 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+	View,
+	Text,
+	StyleSheet,
+	TouchableOpacity,
+	Button
+} from 'react-native';
 
 // Import Custom Components
-import { TRICK_LIST } from '../data/data';
+import { TRICK_LIST, TRANS_LIST } from '../data/data';
 
 export default class ComboGenScreen extends React.Component {
 	constructor(props){
@@ -29,18 +35,77 @@ export default class ComboGenScreen extends React.Component {
 
 	// Add element to end of Combo
 	_addToCombo_Handler() {
-		var min = 0;
-		var max = TRICK_LIST.length;
-		let _rnd = Math.floor(Math.random() * (max - min) + min);
+		var newTrick = [null, null];
 
-		this.setState(() => ({ combo: [...this.state.combo, TRICK_LIST[_rnd]] }) );
-		this.setState(() => ({ comboString: [...this.state.comboString, TRICK_LIST[_rnd].name] }) );
+		var min = 0;
+		var max = 0; // TRICK_LIST.length;
+		let rnd = 0; //Math.floor(Math.random() * (max - min) + min);
+
+		// First Trick
+		if (this.state.combo.length == 0){
+			max = TRICK_LIST.length;
+			rnd = Math.floor(Math.random() * (max - min) + min);
+			this.setState(() => ({ combo: [...this.state.combo, TRICK_LIST[rnd]] }));
+			this.setState(() => ({ comboString: [...this.state.comboString, TRICK_LIST[rnd].name] }));
+		}
+		else {
+			// Find viable list of Trisitions
+			var _transArray = [];
+			// Filter through 'TRANS_LIST.startPos' for current Tricks endPos.
+			for (var tr in TRANS_LIST) {
+				if (TRANS_LIST[tr].startPos == this.state.combo[this.state.combo.length-1].landingStance) {
+					_transArray.push(TRANS_LIST[tr]);
+				}
+			}
+			// Check that a viable Transition exists
+			if (_transArray.length > 0)
+			{
+				// Select Transition
+				var _trans;
+				max = _transArray.length;
+				rnd = Math.floor(Math.random() * (max-min));
+				_trans = _transArray[rnd];
+
+				// Store Saved Transition
+				newTrick[0] = _trans;
+
+				// Find viable list of Tricks
+				var _trickArray = [];
+				// Filter through 'TRICK_LIST.startPos' for '_trans.endPos'
+				for (var tr in TRICK_LIST) {
+					if (TRICK_LIST[tr].takeoff.includes(_trans.title)) {
+						_trickArray.push(TRICK_LIST[tr]);
+					}
+				}
+				// Check that a viable Trick exists
+				if (_trickArray.length > 0) {
+					// Select Trick
+					var _trick;
+					max = _trickArray.length;
+					rnd = Math.floor(Math.random() * (max-min));
+					_trick = _trickArray[rnd];
+
+					// Store Saved Trick
+					newTrick[1] = _trick;
+
+					// Add '_trick' to combo and comboString
+					this.setState(() => ({ combo: [...this.state.combo, newTrick[0], newTrick[1] ]}));
+					this.setState(() => ({ comboString: [...this.state.comboString, newTrick[0].name, newTrick[1].name ]}));
+				}
+				else {
+					alert('No Tricks Available');
+				}
+			}
+			else { 
+				alert('No Transitions Available');
+			}
+		}
 	}
 
 	// Remove last element from Combo
 	_remFromCombo_Handler() {
-		this.setState(() => ({ combo: [...this.state.combo.slice(0,this.state.combo.length-1)] }) );
-		this.setState(() => ({ comboString: [...this.state.comboString.slice(0,this.state.comboString.length-1)] }) );
+		this.setState(() => ({ combo: [...this.state.combo.slice(0,this.state.combo.length-2)] }) );
+		this.setState(() => ({ comboString: [...this.state.comboString.slice(0,this.state.comboString.length-2)] }) );
 	}
 
 	// Clear Combo
@@ -48,13 +113,13 @@ export default class ComboGenScreen extends React.Component {
 		this.setState(() => ({ combo: [] }) );
 		this.setState(() => ({ comboString: [] }) );
 	}
-	
+
 	render () {
 		return (
 			<View style={styles.container}>
 				<Text style={styles.text}>Do This Combo</Text>
 				<View style={styles.comboContainer}>
-					<Text>{this.state.comboString.join(" > ")}</Text>
+					<Text style={styles.comboText}>{this.state.comboString.join(" > ")}</Text>
 				</View>
 
 				<View style={{
@@ -69,12 +134,15 @@ export default class ComboGenScreen extends React.Component {
 						<Text style={styles.btnText}>Remove</Text>
 					</TouchableOpacity>
 
+					{/*
 					<TouchableOpacity
 						style={styles.buttonContainer}
 						onPress={() => this._genCombo_Handler()}>
 						<Text style={styles.btnText}>Generate</Text>
-					
+
 					</TouchableOpacity>
+					*/}
+
 					<TouchableOpacity
 						style={styles.buttonContainer}
 						onPress={() => this._addToCombo_Handler()}>
@@ -103,19 +171,22 @@ const styles = StyleSheet.create({
 		borderRadius: 5,
 		padding: 10,
 		margin: 20,
-		width: '20%',
+		width: '30%',
 		alignItems: 'center'
 	},
 	comboContainer: {
 		margin: 10,
 		width: '80%',
-		height: 40,
+		height: 200,
 		backgroundColor: '#fff',
 		alignItems: 'center',
 		justifyContent: 'center',
 		borderWidth: 1,
 		borderColor: '#000',
 		borderRadius: 5
+	},
+	comboText: {
+		margin: 10,
 	},
 	btnText: {
 		fontSize: 20,

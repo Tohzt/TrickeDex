@@ -12,7 +12,7 @@ export default class Trick {
 		this.id = id;
 		this.title = title;
 		this.name = name;
-		this.takeoff = takeoff;
-		this.landingStance = landingStance
+		this.takeoff = takeoff || [];
+		this.landingStance = landingStance;
 	}
 }

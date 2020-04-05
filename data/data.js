@@ -1,42 +1,101 @@
-import Tricks from './Tricks';
-import Variations from './Variations';
-import Transitions from './Transitions';
-import LandingStances from './LandingStances';
+import Trick from './Tricks';
+import Vari  from './Variations';
+import Trans from './Transitions';
 
 export const TRICK_LIST = [
-	new Tricks(
-		'T1', 
-		'Tornado Kick', 
+	/* ID | TITLE | NAME | TAKEOFF | LANDING_STANCE*/
+	// Kicks
+	new Trick(
+		'TK1',
+		'Tornado Kick',
 		'Tornado',
-		'vanish',
-		'mega'
-	),
-	new Tricks(
-		'T2', 
-		'Corkscrew', 
-		'Cork',
-		'swing',
+		['vanish'],
 		'complete'
 	),
-	new Tricks(
-		'T3', 
-		'Butterfly Twist', 
-		'Btwist',
-		'_vanish',
-		'complete'
-	),
-	new Tricks(
-		'T4', 
-		'Aerial', 
-		'Aerial',
-		'_vanish',
-		'hyper'
-	),
-	new Tricks(
-		'T5', 
-		'540 Kick', 
+	new Trick(
+		'TK2',
+		'540 Kick',
 		'540',
-		'vanish',
+		['vanish'],
 		'hyper'
+	),
+	new Trick(
+		'TK3',
+		'720 Kick',
+		'720',
+		['vanish'],
+		'hyper'
+	),
+	new Trick(
+		'TK4',
+		'900 Kick',
+		'900',
+		['vanish', 'pop'],
+		'complete'
+	),
+	new Trick(
+		'TK5',
+		'540 hyper-hook',
+		'Jackknife',
+		['vanish'],
+		'hyper'
+	),
+
+	// Twists
+	new Trick(
+		'TT1',
+		'Corkscrew',
+		'Cork',
+		['swing', 'boneless'],
+		'complete'
+	),
+	new Trick(
+		'TT1',
+		'Butterfly Twist',
+		'Btwist',
+		['_vanish', 'misleg'],
+		'complete'
+	),
+	// Flips
+	new Trick(
+		'TF1',
+		'Aerial',
+		'Aerial',
+		['_vanish, misleg'],
+		'hyper'
+	),
+];
+
+export const TRANS_LIST = [
+	/* ID | TITLE | NAME | START-POS*/
+	new Trans(
+		'TR1',
+		'swing',
+		's/t',
+		'complete',
+	),
+	new Trans(
+		'TR2',
+		'misleg',
+		'misleg',
+		'complete',
+	),
+	new Trans(
+		'TR3',
+		'vanish',
+		'vanish',
+		'complete',
+	),
+	new Trans(
+		'TR4',
+		'_vanish',
+		'vanish',
+		'hyper',
+	),
+	new Trans(
+		'TR5',
+		'boneless',
+		'boneless',
+		'hyper',
 	),
 ];
