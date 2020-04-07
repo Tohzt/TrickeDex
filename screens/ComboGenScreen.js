@@ -4,7 +4,7 @@ import {
 	Text,
 	StyleSheet,
 	TouchableOpacity,
-	Button
+	ScrollView,
 } from 'react-native';
 
 // Import Custom Components
@@ -15,8 +15,21 @@ export default class ComboGenScreen extends React.Component {
 		super(props);
 		this.state = { 
 			combo: [], 
-			comboString: []
+			comboString: [],
+			testCombo: []
 		};
+	}
+
+	_trickButton(tr) {
+		return (
+			<View style={{width:'80%'}}>
+				<TouchableOpacity>
+					<View style={{alignItems: 'center',  borderColor: '#00f', borderWidth: 2, margin: 2}}>
+						<Text style={{paddingVertical: 2}}>{tr.name}</Text>
+					</View>
+				</TouchableOpacity>
+			</View>
+		)
 	}
 
 	// Generate "random" Combo
@@ -47,6 +60,7 @@ export default class ComboGenScreen extends React.Component {
 			rnd = Math.floor(Math.random() * (max - min) + min);
 			this.setState(() => ({ combo: [...this.state.combo, TRICK_LIST[rnd]] }));
 			this.setState(() => ({ comboString: [...this.state.comboString, TRICK_LIST[rnd].name] }));
+			this.setState(() => ({ testCombo: [...this.state.testCombo, this._trickButton(TRICK_LIST[rnd])] }));
 		}
 		else {
 			// Find viable list of Trisitions
@@ -91,6 +105,11 @@ export default class ComboGenScreen extends React.Component {
 					// Add '_trick' to combo and comboString
 					this.setState(() => ({ combo: [...this.state.combo, newTrick[0], newTrick[1] ]}));
 					this.setState(() => ({ comboString: [...this.state.comboString, newTrick[0].name, newTrick[1].name ]}));
+					this.setState(() => ({ testCombo: [
+						...this.state.testCombo, 
+						this._trickButton(newTrick[0]), 
+						this._trickButton(newTrick[1])
+					]}));
 				}
 				else {
 					alert('No Tricks Available');
@@ -106,20 +125,36 @@ export default class ComboGenScreen extends React.Component {
 	_remFromCombo_Handler() {
 		this.setState(() => ({ combo: [...this.state.combo.slice(0,this.state.combo.length-2)] }) );
 		this.setState(() => ({ comboString: [...this.state.comboString.slice(0,this.state.comboString.length-2)] }) );
+		this.setState(() => ({ testCombo: [...this.state.testCombo.slice(0,this.state.testCombo.length-2)] }) );
 	}
 
 	// Clear Combo
 	_delCombo_Handler() {
 		this.setState(() => ({ combo: [] }) );
 		this.setState(() => ({ comboString: [] }) );
+		this.setState(() => ({ testCombo: []}))
 	}
 
 	render () {
 		return (
 			<View style={styles.container}>
 				<Text style={styles.text}>Do This Combo</Text>
+				
+				{/*
 				<View style={styles.comboContainer}>
 					<Text style={styles.comboText}>{this.state.comboString.join(" > ")}</Text>
+				</View>
+				*/}
+
+				<View style={styles.comboContainer}>
+					<ScrollView 
+						ref={(scroll) => {this.scroll = scroll;}}
+						onContentSizeChange={() => {this.scroll.scrollToEnd()}}
+						style={styles.scrollComboContainer}
+						contentContainerStyle={{alignItems: 'center'}}
+					>
+						{this.state.testCombo}
+					</ScrollView>
 				</View>
 
 				<View style={{
@@ -173,6 +208,9 @@ const styles = StyleSheet.create({
 		margin: 20,
 		width: '30%',
 		alignItems: 'center'
+	},
+	scrollComboContainer: {
+		width: '100%',
 	},
 	comboContainer: {
 		margin: 10,
