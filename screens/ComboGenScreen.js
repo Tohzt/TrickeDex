@@ -5,45 +5,57 @@ import {
 	StyleSheet,
 	TouchableOpacity,
 	ScrollView,
+	Button
 } from 'react-native';
 
 // Import Custom Components
 import { TRICK_LIST, TRANS_LIST } from '../data/data';
+import TrickInCombo from '../components/TrickInCombo';
 
 export default class ComboGenScreen extends React.Component {
 	constructor(props){
 		super(props);
 		this.state = { 
 			combo: [], 
-			comboString: [],
-			testCombo: []
+			dispCombo: [],
 		};
+		this._swapTrick = this._swapTrick.bind(this);
 	}
 
-	_trickButton(tr) {
-		return (
-			<View style={{width:'80%'}}>
-				<TouchableOpacity>
-					<View style={{alignItems: 'center',  borderColor: '#00f', borderWidth: 2, margin: 2}}>
-						<Text style={{paddingVertical: 2}}>{tr.name}</Text>
-					</View>
-				</TouchableOpacity>
-			</View>
+	// Initialize Trick Object in Combo
+	_trickButton(tr, tr_pos, tr_type) {
+		return(
+			<TrickInCombo 
+				trick={tr} 
+				position={tr_pos}
+				type={tr_type}
+				swapTrick={this._swapTrick}
+			/>
 		)
+	}
+
+	// Swap out current Trick for a new one
+	_swapTrick(tr_pos, tr_type){
+		if (tr_type === 'trick'){
+			var newTrick = TRICK_LIST[0];
+			var newCombo = this.state.dispCombo;
+			newCombo[tr_pos] = this._trickButton(newTrick, tr_pos);
+			this.setState({ dispCombo: newCombo });
+		}
+		else if (tr_type === 'trans'){
+			alert('Transition Change not yet supported.')
+		}
 	}
 
 	// Generate "random" Combo
 	_genCombo_Handler() {
 		var _arr = [];
-		var _arrStr = [];
 
 		for (var trick in TRICK_LIST) {
 			_arr.push(TRICK_LIST[trick]);
-			_arrStr.push(TRICK_LIST[trick].name);
 		}
 
 		this.setState(() => ({ combo: _arr }));
-		this.setState(() => ({ comboString: _arrStr }));
 	}
 
 	// Add element to end of Combo
@@ -59,8 +71,7 @@ export default class ComboGenScreen extends React.Component {
 			max = TRICK_LIST.length;
 			rnd = Math.floor(Math.random() * (max - min) + min);
 			this.setState(() => ({ combo: [...this.state.combo, TRICK_LIST[rnd]] }));
-			this.setState(() => ({ comboString: [...this.state.comboString, TRICK_LIST[rnd].name] }));
-			this.setState(() => ({ testCombo: [...this.state.testCombo, this._trickButton(TRICK_LIST[rnd])] }));
+			this.setState(() => ({ dispCombo: [...this.state.dispCombo, this._trickButton(TRICK_LIST[rnd], this.state.dispCombo.length, 'trick')] }));
 		}
 		else {
 			// Find viable list of Trisitions
@@ -102,13 +113,12 @@ export default class ComboGenScreen extends React.Component {
 					// Store Saved Trick
 					newTrick[1] = _trick;
 
-					// Add '_trick' to combo and comboString
+					// Add '_trick' to combo and disoDombo
 					this.setState(() => ({ combo: [...this.state.combo, newTrick[0], newTrick[1] ]}));
-					this.setState(() => ({ comboString: [...this.state.comboString, newTrick[0].name, newTrick[1].name ]}));
-					this.setState(() => ({ testCombo: [
-						...this.state.testCombo, 
-						this._trickButton(newTrick[0]), 
-						this._trickButton(newTrick[1])
+					this.setState(() => ({ dispCombo: [
+						...this.state.dispCombo, 
+						this._trickButton(newTrick[0], this.state.dispCombo.length, 'trans'), 
+						this._trickButton(newTrick[1], this.state.dispCombo.length+1, 'trick')
 					]}));
 				}
 				else {
@@ -124,15 +134,13 @@ export default class ComboGenScreen extends React.Component {
 	// Remove last element from Combo
 	_remFromCombo_Handler() {
 		this.setState(() => ({ combo: [...this.state.combo.slice(0,this.state.combo.length-2)] }) );
-		this.setState(() => ({ comboString: [...this.state.comboString.slice(0,this.state.comboString.length-2)] }) );
-		this.setState(() => ({ testCombo: [...this.state.testCombo.slice(0,this.state.testCombo.length-2)] }) );
+		this.setState(() => ({ dispCombo: [...this.state.dispCombo.slice(0,this.state.dispCombo.length-2)] }) );
 	}
 
 	// Clear Combo
 	_delCombo_Handler() {
 		this.setState(() => ({ combo: [] }) );
-		this.setState(() => ({ comboString: [] }) );
-		this.setState(() => ({ testCombo: []}))
+		this.setState(() => ({ dispCombo: []}))
 	}
 
 	render () {
@@ -140,12 +148,6 @@ export default class ComboGenScreen extends React.Component {
 			<View style={styles.container}>
 				<Text style={styles.text}>Do This Combo</Text>
 				
-				{/*
-				<View style={styles.comboContainer}>
-					<Text style={styles.comboText}>{this.state.comboString.join(" > ")}</Text>
-				</View>
-				*/}
-
 				<View style={styles.comboContainer}>
 					<ScrollView 
 						ref={(scroll) => {this.scroll = scroll;}}
@@ -153,7 +155,7 @@ export default class ComboGenScreen extends React.Component {
 						style={styles.scrollComboContainer}
 						contentContainerStyle={{alignItems: 'center'}}
 					>
-						{this.state.testCombo}
+						{this.state.dispCombo}
 					</ScrollView>
 				</View>
 
