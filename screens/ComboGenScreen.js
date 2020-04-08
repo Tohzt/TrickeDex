@@ -37,10 +37,61 @@ export default class ComboGenScreen extends React.Component {
 	// Swap out current Trick for a new one
 	_swapTrick(tr_pos, tr_type){
 		if (tr_type === 'trick'){
+			/*
 			var newTrick = TRICK_LIST[0];
 			var newCombo = this.state.dispCombo;
 			newCombo[tr_pos] = this._trickButton(newTrick, tr_pos);
 			this.setState({ dispCombo: newCombo });
+			*/
+			if (tr_pos == 0){
+				var newTrick = [null, null];
+				var transOut = [];
+				// Get list of transitions that can go into the next trick
+				for (var trans in TRANS_LIST){
+					if (this.state.combo[2].takeoff.includes(TRANS_LIST[trans].title)){
+						transOut.push(TRANS_LIST[trans]);
+					}
+				}
+				if (transOut.length > 0){
+					// Choose Transition
+					//newTrick[1] = transOut[0];
+					newTrick[1] = transOut[Math.floor(Math.random() * transOut.length)];
+
+					var trickIn = [];
+					// Find Trick that can go into new transition
+					for (var trick in TRICK_LIST){
+						if (TRICK_LIST[trick].landingStance == newTrick[1].startPos){
+							trickIn.push(TRICK_LIST[trick]);
+						}
+					}
+					if (trickIn.length > 0){
+						// Choose Trick
+						//newTrick[0] = trickIn[0];
+						newTrick[0] = trickIn[Math.floor(Math.random() * trickIn.length)];
+
+						// Add To Combo
+						var newCombo = this.state.combo;
+						var newDisp = this.state.dispCombo;
+						newCombo[0] = newTrick[0];
+						newCombo[1] = newTrick[1];
+						newDisp[0] = this._trickButton(newTrick[0], 0, 'trick');
+						newDisp[1] = this._trickButton(newTrick[1], 1, 'trans');
+						this.setState({
+							combo: newCombo,
+							dispCombo: newDisp
+						});
+					}
+					else {
+						alert('Something Goofed when gathering Trick');
+					}
+				}
+				else {
+					alert('Something Goofed when gathering transitions');
+				}
+			}
+			else{
+			
+			}
 		}
 		else if (tr_type === 'trans'){
 			alert('Transition Change not yet supported.')
