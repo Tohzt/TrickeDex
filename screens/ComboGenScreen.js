@@ -35,6 +35,21 @@ export default class ComboGenScreen extends React.Component {
 		)
 	}
 
+	show_debugMessage(_pos, _transIn, _trick, _transOut){
+		console.log('----------');
+		console.log('Position: ' + _pos);
+		console.log('Transitions In:');
+		for (var ti in _transIn){
+			console.log('    > '+_transIn[ti].title)
+		}
+		console.log('Tricks: '+_trick.title);
+		console.log('Transitions Out:');
+		for (var to in _transOut){
+			console.log('    < '+_transOut[to].title)
+		}
+		console.log('----------');
+	}
+
 	// SWAP OUT SELECTED TRICK
 	_swapTrick(tr_pos, tr_type){
 		if (this.state.combo.length > 1){
@@ -54,42 +69,91 @@ export default class ComboGenScreen extends React.Component {
 						}
 					}
 					// IDENTIFY TRANSITIONS OUT OF NEW TRICK
-					else {
+					if (tr_pos < this.state.combo.length-1) {
 						if (this.state.combo[tr_pos+2].takeoff.includes(TRANS_LIST[trans].title)){
 							transOut.push(TRANS_LIST[trans]);
 						}
 					}
 				}
 
+				// LOOP THROUGH LIST OF TRICKS
+				for (var trick in TRICK_LIST){
+					if (tr_pos > 0){
+						// Ignore Transition Out - swapTo[2]
+						for (var tr in transIn){
+							if (TRICK_LIST[trick].takeoff.includes(transIn[tr].title)){
+								if (!newTrick.includes(TRICK_LIST[trick]))
+									newTrick.push(TRICK_LIST[trick]);
+							}
+						}
+					}
+
+					if (tr_pos < this.state.combo.length-1){
+						// Ignore Transition In - swapTo[0]
+						for (var tr in transOut){
+							if (TRICK_LIST[trick].landingStance == transOut[tr].startPos){
+								if (!newTrick.includes(TRICK_LIST[trick]))
+									newTrick.push(TRICK_LIST[trick]);
+							}
+						}
+					}
+				}
+
+
+				// LOOP THROUGH POTENTIAL TRICKS
+				var foundTrick = false;
+				var validTrick = [];
+				for (var trick in newTrick){
+					if (tr_pos == 0){
+
+					}
+					else if (tr_pos == this.state.combo.length-1){
+					}
+					else{
+					}
+				}
+
+				// FILTER VALID TRICK
+				var validTricks = [];
+				if (tr_pos > 0){
+					for (var trick in newTrick){
+						for (var trans in transIn){
+							if (newTrick[trick].takeoff.includes(transIn[trans].title)){
+								if (!validTricks.includes(newTrick[trick]))
+									validTricks.push(newTrick[trick]);
+							}
+						}	
+					}
+					newTrick = validTricks;
+				}
+				swapTo[1] = newTrick[Math.floor(Math.random()*newTrick.length)];
+
+
+				// FILTER VALID TRANS IN
+				var validTransIn = [];
+				for (var trans in transIn){
+					if (swapTo[1].takeoff.includes(transIn[trans].title))
+						validTransIn.push(transIn[trans])
+				}
+				transIn = validTransIn;
+
+				// FILTER TRANS OUT
+				var validTransOut = [];
+				for (var trans in transOut){
+					if (swapTo[1].landingStance == transOut[trans].startPos)
+						validTransOut.push(transOut[trans]);
+				}
+				transOut = validTransOut;
+
+				this.show_debugMessage(tr_pos, transIn, swapTo[1], transOut);
+
 				// SET TRANSITION IN
 				swapTo[0] = transIn[Math.floor(Math.random()*transIn.length)];
 				// SET TRANSITION OUT
 				swapTo[2] = transOut[Math.floor(Math.random()*transOut.length)];
 
-				// LOOP THROUGH LIST OF TRICKS
-				for (var trick in TRICK_LIST){
-					switch(tr_pos){
-						case 0:
-							// Ignore Transition In - swapTo[0]
-							if (TRICK_LIST[trick].landingStance == swapTo[2].startPos){
-								newTrick.push(TRICK_LIST[trick]);
-							}
-							break;
-
-						case this.state.combo.length-1:
-							// Ignore Transition Out - swapTo[2]
-							if (TRICK_LIST[trick].takeoff.includes(swapTo[0].name))
-								newTrick.push(TRICK_LIST[trick]);
-							break;
-
-						default:
-							break;
-					}
-				}
-
 				// Set Trick
 				if (newTrick.length > 0){
-					swapTo[1] = newTrick[Math.floor(Math.random()*newTrick.length)];
 
 					// Update Combo
 					var newCombo = this.state.combo;
@@ -123,64 +187,26 @@ export default class ComboGenScreen extends React.Component {
 							break;
 
 						default:
+							newCombo[tr_pos-1] = swapTo[0];
+							newCombo[tr_pos] = swapTo[1];
+							newCombo[tr_pos+1] = swapTo[2];
+							this.setState({
+								combo: newCombo,
+								dispCombo: [
+									this.state.dispCombo.slice(0, tr_pos-1),
+									this._trickButton(swapTo[0], tr_pos-1, 'trans'), 
+									this._trickButton(swapTo[1], tr_pos, 'trick'), 
+									this._trickButton(swapTo[2], tr_pos+1, 'trans'),
+									this.state.dispCombo.slice(tr_pos+2, this.state.dispCombo.length)
+								]
+							});
 							break;
 					}
 				}
 				else {
-					alert('No Trick Found');
 					console.log('No Trick Found')
 				}
-				/*
-				if (tr_pos == 0){
-					var newTrick = [null, null];
-					var transOut = [];
-					// Get list of transitions that can go into the next trick
-					for (var trans in TRANS_LIST){
-						if (this.state.combo[2].takeoff.includes(TRANS_LIST[trans].title)){
-							transOut.push(TRANS_LIST[trans]);
-						}
-					}
-					if (transOut.length > 0){
-						// Choose Transition
-						newTrick[1] = transOut[Math.floor(Math.random() * transOut.length)];
-
-						var trickIn = [];
-						// Find Trick that can go into new transition
-						for (var trick in TRICK_LIST){
-							if (TRICK_LIST[trick].landingStance == newTrick[1].startPos){
-								trickIn.push(TRICK_LIST[trick]);
-							}
-						}
-						if (trickIn.length > 0){
-							// Choose Trick
-							newTrick[0] = trickIn[Math.floor(Math.random() * trickIn.length)];
-
-							// Add To Combo
-							var newCombo = this.state.combo;
-							newCombo[0] = newTrick[0];
-							newCombo[1] = newTrick[1];
-							this.setState({
-								combo: newCombo,
-								dispCombo: [
-									this._trickButton(newTrick[0], 0, 'trick'), 
-									this._trickButton(newTrick[1], 1, 'trans'), 
-									this.state.dispCombo.slice(2, this.state.dispCombo.length)
-								]
-							});
-						}
-						else {
-							alert('Something Goofed when gathering Trick');
-						}
-					}
-					else {
-						alert('Something Goofed when gathering transitions');
-					}
-				}
-				else{
-
-				}
-				*/
-						}
+			}
 			else if (tr_type === 'trans'){
 				alert('Transition Change not yet supported.')
 			}
@@ -314,8 +340,8 @@ export default class ComboGenScreen extends React.Component {
 				<Button 
 					title={'Test Print'} 
 					onPress={() => {
-						for (var trick in this.state.combo)
-							console.log(this.state.combo[trick].name)
+						for (var trick in this.state.dispCombo)
+							console.log(this.state.dispCombo[trick].props.trick.name)
 					}}
 				/>
 				<Button 
