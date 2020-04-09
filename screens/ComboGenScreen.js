@@ -35,10 +35,102 @@ export default class ComboGenScreen extends React.Component {
 		)
 	}
 
-	// Swap out current Trick for a new one
+	// SWAP OUT SELECTED TRICK
 	_swapTrick(tr_pos, tr_type){
 		if (this.state.combo.length > 1){
 			if (tr_type === 'trick'){
+				// STORE NEXT TRICK/TRANS
+				var transIn = [];
+				var newTrick = [];
+				var transOut = [];
+				var swapTo = [null, null, null];
+
+				// LOOP THROUGH LIST OF TRANSITION
+				for (var trans in TRANS_LIST){
+					// IDENTIFY TRANSITIONS INTO NEW TRICK 
+					if (tr_pos > 0){
+						if (TRANS_LIST[trans].startPos == this.state.combo[tr_pos-2].landingStance){
+							transIn.push(TRANS_LIST[trans]);
+						}
+					}
+					// IDENTIFY TRANSITIONS OUT OF NEW TRICK
+					else {
+						if (this.state.combo[tr_pos+2].takeoff.includes(TRANS_LIST[trans].title)){
+							transOut.push(TRANS_LIST[trans]);
+						}
+					}
+				}
+
+				// SET TRANSITION IN
+				swapTo[0] = transIn[Math.floor(Math.random()*transIn.length)];
+				// SET TRANSITION OUT
+				swapTo[2] = transOut[Math.floor(Math.random()*transOut.length)];
+
+				// LOOP THROUGH LIST OF TRICKS
+				for (var trick in TRICK_LIST){
+					switch(tr_pos){
+						case 0:
+							// Ignore Transition In - swapTo[0]
+							if (TRICK_LIST[trick].landingStance == swapTo[2].startPos){
+								newTrick.push(TRICK_LIST[trick]);
+							}
+							break;
+
+						case this.state.combo.length-1:
+							// Ignore Transition Out - swapTo[2]
+							if (TRICK_LIST[trick].takeoff.includes(swapTo[0].name))
+								newTrick.push(TRICK_LIST[trick]);
+							break;
+
+						default:
+							break;
+					}
+				}
+
+				// Set Trick
+				if (newTrick.length > 0){
+					swapTo[1] = newTrick[Math.floor(Math.random()*newTrick.length)];
+
+					// Update Combo
+					var newCombo = this.state.combo;
+					switch(tr_pos){
+						case 0:
+							// Ignore Transition In - newTrick[0]
+							newCombo[0] = swapTo[1];
+							newCombo[1] = swapTo[2];
+							this.setState({
+								combo: newCombo,
+								dispCombo: [
+									this._trickButton(swapTo[1], 0, 'trick'), 
+									this._trickButton(swapTo[2], 1, 'trans'), 
+									this.state.dispCombo.slice(2, this.state.dispCombo.length)
+								]
+							});
+							break;
+
+						case this.state.combo.length-1:
+							// Ignore Transition Out - newTrick[2]
+							newCombo[newCombo.length-2] = swapTo[0];
+							newCombo[newCombo.length-1] = swapTo[1];
+							this.setState({
+								combo: newCombo,
+								dispCombo: [
+									this.state.dispCombo.slice(0, this.state.dispCombo.length-2),
+									this._trickButton(swapTo[0], this.state.combo.length-2, 'trans'), 
+									this._trickButton(swapTo[1], this.state.combo.length-1, 'trick'), 
+								]
+							});
+							break;
+
+						default:
+							break;
+					}
+				}
+				else {
+					alert('No Trick Found');
+					console.log('No Trick Found')
+				}
+				/*
 				if (tr_pos == 0){
 					var newTrick = [null, null];
 					var transOut = [];
@@ -87,7 +179,8 @@ export default class ComboGenScreen extends React.Component {
 				else{
 
 				}
-			}
+				*/
+						}
 			else if (tr_type === 'trans'){
 				alert('Transition Change not yet supported.')
 			}
@@ -187,7 +280,6 @@ export default class ComboGenScreen extends React.Component {
 	render () {
 		return (
 			<View style={styles.container}>
-				<Text>{this.state.combo.length}</Text>
 				<Text style={styles.text}>Do This Combo</Text>
 
 				<View style={styles.comboContainer}>
@@ -220,12 +312,19 @@ export default class ComboGenScreen extends React.Component {
 					</TouchableOpacity>
 				</View>
 				<Button 
+					title={'Test Print'} 
+					onPress={() => {
+						for (var trick in this.state.combo)
+							console.log(this.state.combo[trick].name)
+					}}
+				/>
+				<Button 
 					title={'clear console'} 
-						onPress={() => {
-							console.log('----------')
-						}}
-					/>
-				</View>
+					onPress={() => {
+						console.log('----------')
+					}}
+				/>
+			</View>
 		);
 	}
 }
