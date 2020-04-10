@@ -10,7 +10,7 @@ const TrickInCombo = (props) => {
 		return (
 			<View style={{width:'80%'}}>
 				<TouchableOpacity onPress={() => {props.swapTrick(props.position, props.type)}}>
-					<View style={{alignItems: 'center',  borderColor: '#00f', borderWidth: 2, margin: 2}}>
+					<View style={{flexDirection: 'row', justifyContent: 'space-around',  borderColor: '#00f', borderWidth: 2, margin: 2}}>
 						<Text style={{paddingVertical: 2}}>{props.trick.name}</Text>
 					</View>
 				</TouchableOpacity>
