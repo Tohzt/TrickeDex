@@ -83,7 +83,7 @@ export default class ComboGenScreen extends React.Component {
 						// Ignore Transition Out - swapTo[2]
 						for (var tr in transIn){
 							if (TRICK_LIST[trick].takeoff.includes(transIn[tr].title)){
-								if (!newTrick.includes(TRICK_LIST[trick]))
+								if (!newTrick.includes(TRICK_LIST[trick]) && TRICK_LIST[trick] != this.state.dispCombo[tr_pos].props.trick)
 									newTrick.push(TRICK_LIST[trick]);
 							}
 						}
@@ -93,7 +93,7 @@ export default class ComboGenScreen extends React.Component {
 						// Ignore Transition In - swapTo[0]
 						for (var tr in transOut){
 							if (TRICK_LIST[trick].landingStance == transOut[tr].startPos){
-								if (!newTrick.includes(TRICK_LIST[trick]))
+								if (!newTrick.includes(TRICK_LIST[trick]) && TRICK_LIST[trick] != this.state.dispCombo[tr_pos].props.trick)
 									newTrick.push(TRICK_LIST[trick]);
 							}
 						}
@@ -106,8 +106,18 @@ export default class ComboGenScreen extends React.Component {
 					for (var trick in newTrick){
 						for (var trans in transIn){
 							if (newTrick[trick].takeoff.includes(transIn[trans].title)){
-								if (!validTricks.includes(newTrick[trick]))
-									validTricks.push(newTrick[trick]);
+								if (transOut.length > 0){
+									for (var trans_ in transOut){
+										if (!validTricks.includes(newTrick[trick])){
+											if (!validTricks.includes(newTrick[trick]))
+												validTricks.push(newTrick[trick]);
+										}
+									}
+								}
+								else{
+									if (!validTricks.includes(newTrick[trick]))
+										validTricks.push(newTrick[trick]);
+								}
 							}
 						}	
 					}
@@ -132,7 +142,7 @@ export default class ComboGenScreen extends React.Component {
 				}
 				transOut = validTransOut;
 
-				this.show_debugMessage(tr_pos, transIn, swapTo[1], transOut);
+				//this.show_debugMessage(tr_pos, transIn, swapTo[1], transOut);
 
 				// SET TRANSITION IN
 				swapTo[0] = transIn[Math.floor(Math.random()*transIn.length)];
@@ -171,8 +181,16 @@ export default class ComboGenScreen extends React.Component {
 								_arr.push(null);
 								this.setState({ dispCombo: _arr.slice(0, this.state.dispCombo.length-1)});
 							}
-							else
+							else{
+								if (swapTo[0] == null)
+									console.log("No Trans In")
+								if (swapTo[1] == null)
+									console.log("No Trick")
+								if (swapTo[2] == null){
+									console.log("No Trans Out of: " + swapTo[1].name)
+								}	
 								alert("Nope")
+							}
 							break;
 					}
 				}
