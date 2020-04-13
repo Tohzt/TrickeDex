@@ -1,6 +1,10 @@
-const comboListReducer = (state = ["First ", "second "], action) => {
+const comboListReducer = (state = [], action) => {
 	switch(action.type){
-		case 'SAVE_COMBO':
+		case 'ADD_COMBO':
+			state.push(action.payload);
+			return state;
+		case 'DEL_ALL':
+			state = [];
 			return state;
 		default:
 			return state;

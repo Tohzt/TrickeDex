@@ -1,5 +1,13 @@
-export const comboList = () => {
+export const addCombo = (combo) => {
 	return {
-		type: 'SAVE_COMBO'
+		type: 'ADD_COMBO',
+		payload: combo
 	}
 };
+
+export const clearComboList = () => {
+	return {
+		type: 'DEL_ALL'
+	}
+};
+

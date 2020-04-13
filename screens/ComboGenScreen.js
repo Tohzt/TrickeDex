@@ -11,6 +11,7 @@ import {
 // Import Custom Components
 import { TRICK_LIST, TRANS_LIST } from '../data/data';
 import TrickInCombo from '../components/TrickInCombo';
+import SaveCombo from '../components/SaveCombo';
 
 export default class ComboGenScreen extends React.Component {
 	constructor(props){
@@ -30,7 +31,7 @@ export default class ComboGenScreen extends React.Component {
 				trick={tr} 
 				position={tr_pos}
 				type={tr_type}
-				swapTrick={this._swapTrick}
+				tapTrick={this._swapTrick}
 				extraData={this.state.dispCombo}
 			/>
 		)
@@ -350,6 +351,10 @@ export default class ComboGenScreen extends React.Component {
 					}}
 				/>
 				*/}
+				<View style={{flexDirection: 'row', width: '80%', justifyContent: 'space-around'}}>
+					<Button title='Saved Combos' onPress={() => this.props.navigation.navigate('ComboList')}/>
+					<SaveCombo combo={this.state.dispCombo}/>
+				</View>
 			</View>
 		);
 	}
