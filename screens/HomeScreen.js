@@ -1,11 +1,29 @@
 import React from 'react'
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
+import { 
+	StyleSheet, 
+	View, 
+	Text, 
+	TouchableOpacity,
+	Modal
+} from 'react-native'
 import { ScreenOrientation } from 'expo';
 
+// CUSTOM IMPORTS
+import LoginModal from '../components/LoginModal';
 
 export default class Home extends React.Component {
 	constructor(props){
 		super(props);
+		this.state = {
+			modalVisible: true,
+			isLoggedIn: false,
+		};
+		// BIND METHOD
+		this._modalLogin = this._modalLogin.bind(this);
+	}
+
+	_modalLogin() {
+		this.setState({ isLoggedIn: true });
 	}
 
 	render () {
@@ -13,6 +31,7 @@ export default class Home extends React.Component {
 
 		return (
 			<View style={styles.container}>
+				<LoginModal isVisible={!this.state.isLoggedIn} login={this._modalLogin}/>
 				<TouchableOpacity
 					style={styles.buttonContainer}
 					onPress={() => navigate('ComboGen')}
@@ -52,6 +71,6 @@ const styles = StyleSheet.create({
 	btnText: {
 		fontSize: 20,
 		color: '#fff'
-	}
+	},
 })
 
