@@ -10,16 +10,30 @@ import { ScreenOrientation } from 'expo';
 
 // CUSTOM IMPORTS
 import LoginModal from '../components/LoginModal';
+import { firebaseApp } from '../components/src/config';
 
 export default class Home extends React.Component {
 	constructor(props){
 		super(props);
 		this.state = {
-			modalVisible: true,
 			isLoggedIn: false,
+			currentUser: null
 		};
+
 		// BIND METHOD
 		this._modalLogin = this._modalLogin.bind(this);
+	}
+
+	componentDidMount() {
+		firebaseApp.auth().onAuthStateChanged(function(user) {
+			if (user) {
+				// User is signed in.
+				console.log(user.email);
+			}
+		});
+	}
+
+	componentDidUpdate() {
 	}
 
 	_modalLogin() {
@@ -32,6 +46,9 @@ export default class Home extends React.Component {
 		return (
 			<View style={styles.container}>
 				<LoginModal isVisible={!this.state.isLoggedIn} login={this._modalLogin}/>
+
+				<Text>{this.state.currentUser}</Text>
+
 				<TouchableOpacity
 					style={styles.buttonContainer}
 					onPress={() => navigate('ComboGen')}
@@ -49,6 +66,23 @@ export default class Home extends React.Component {
 					onPress={() => navigate('TrickList')}
 				>
 					<Text style={styles.btnText}>To Tricktionary</Text>
+				</TouchableOpacity>
+
+				<TouchableOpacity 
+					style={styles.buttonContainer}
+					onPress={() => console.log("user: " + firebaseApp.auth().currentUser.email)}
+				>
+					<Text style={styles.btnText}> User Data </Text>
+				</TouchableOpacity>
+				<TouchableOpacity 
+					style={styles.buttonContainer}
+					onPress={() => {
+						firebaseApp.auth().signOut()
+						this.setState({isLoggedIn: false});
+						}
+					}
+				>
+					<Text style={styles.btnText}> Sign Out </Text>
 				</TouchableOpacity>
 			</View>
 		)

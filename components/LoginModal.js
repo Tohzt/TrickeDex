@@ -8,15 +8,25 @@ import {
 	StyleSheet,
 } from 'react-native';
 
+// FIRBASE IMPORT
+import { firebaseApp } from './src/config';
+
 export default function LoginModal(props) {
 	// STATE MANAGEMENT
-	const [user, setUser] = useState(null);
-	const [pass, setPass] = useState(null);
+	const [user, setUser] = useState('email@email.com');
+	const [pass, setPass] = useState('pass123');
+
 
 	const _loginHandler = () => {
 		console.log('Username: '+user);
 		console.log('Password: '+pass);
-		//props.login();
+
+	
+		firebaseApp
+			.auth()
+			.signInWithEmailAndPassword(user, pass)
+			.then(() => props.login())
+			.catch(error => console.log(error))
 	}
 
 	return (
