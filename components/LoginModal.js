@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 
 // FIRBASE IMPORT
-import { firebaseApp } from './src/config';
+import { firebaseApp } from '../src/config';
 
 export default function LoginModal(props) {
 	// STATE MANAGEMENT

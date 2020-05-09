@@ -10,7 +10,7 @@ import { ScreenOrientation } from 'expo';
 
 // CUSTOM IMPORTS
 import LoginModal from '../components/LoginModal';
-import { firebaseApp } from '../components/src/config';
+import { firebaseApp } from '../src/config';
 
 export default class Home extends React.Component {
 	constructor(props){
@@ -25,13 +25,14 @@ export default class Home extends React.Component {
 	}
 
 	componentDidMount() {
-		firebaseApp.auth().onAuthStateChanged(function(user) {
-			if (user) {
-				// User is signed in.
-				console.log(user.email);
+		firebaseApp.auth().onAuthStateChanged((user) => {
+			if (user != null) {
+				console.log("We are authenticated now!");
+		console.log("----------");
+				//console.log(firebaseApp.auth().currentUser.uid)
 			}
 		});
-	}
+	};
 
 	componentDidUpdate() {
 	}
@@ -70,10 +71,20 @@ export default class Home extends React.Component {
 
 				<TouchableOpacity 
 					style={styles.buttonContainer}
-					onPress={() => console.log("user: " + firebaseApp.auth().currentUser.email)}
+					onPress={() => { 
+						const user = firebaseApp.auth().currentUser;
+						console.log("User: " + user.toString())
+						if (user != null) {
+							console.log("Save Scor")
+							firebaseApp.database().ref('users/' + user.uid).set({
+								highscore: 101,
+							});
+						}
+					}}
 				>
 					<Text style={styles.btnText}> User Data </Text>
 				</TouchableOpacity>
+				
 				<TouchableOpacity 
 					style={styles.buttonContainer}
 					onPress={() => {
